@@ -2,7 +2,7 @@
 #Aug. 30, 2014
 #renwave of Reddit
 
-import pygcurse, pygame, sys,random
+import pygcurse, pygame, sys,random, time
 from pygame.locals import *
 
 def checkMenu(x): #For while loops in various menus
@@ -293,77 +293,87 @@ class Player:
 
 
 class Movement:
+
+    def isOnMap(x,y):
+        return x >= 0 and y >= 0 and x < 29 and y < 21
         
                 
     def playerMove():
+        
+        moveLeft = moveRight = moveUp = moveDown = False
+        lastmovetime = sys.maxsize
+        mainClock = pygame.time.Clock()
+        
         map1 = ['^^^^^^^^^................~~~~~','^^^^^^^................~~~~~~~','^^^^^^...............~~~~~~~~~','^^^..................~~~~~~~~~','^^^^^...###.........~~~~~~~~~~','^^^^....###........~~~~~~~~~~~','^^.......X..........~~~~~~~~~~','^.................~~~~~~~~~~~~','..................~~~~~~~~~~~~','.................~~~~~~~~~~~~~','................~~~~~~~~~~~~~~','..............~~~~~~~~~~~~~~~~','............~~~~~~~~~~~~~~~~~~','..........~~~~~~~~~~~~~~~~~~~~','........~~~~~~~~~~~~~~~~~~~~~~','......~~~~~~~~~~~~~~~~~~~~~~~~','...~~~~~~~~~~~~~~~~~~~~~~~~~~~','.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~']
         q = 0
         checkMenu(0)
         box = pygcurse.PygcurseTextbox(win, (0,22,40,3), fgcolor='white', bgcolor='black', border='basic',wrap=True,margin=0,caption='')
         box.text = 'HP:'+str(Player.health)+'/'+str(Player.max_health)+' | MP:'+str(Player.mana)+'/'+str(Player.max_mana)+' | Exp:' + str(Player.exp) + '/'+ str(Player.max_exp) +'*'
         statusBox = pygcurse.PygcurseTextbox(win, (30,0,10,23), fgcolor='white', bgcolor='black', border='basic',wrap=True,margin=0,caption='Status')
-#################################
-#   This is the problem area!!  #
-#################################
-#The textbox doesn't update     #
-#when the player moves around.  #
-#                               #
-#If I uncomment all the pygwrite#
-#methods they will update the   #
-#players xpos,ypos as they move #
-#around. Which would mean that  #
-#I would need to change health  #
-#and mana text box to just      #
-#pygwrite() as well.            #
-#################################
-        statusBox.text = '''Class:
-%s
---------
-Level:  
-%s
---------
-Zone:
-Need to
-put zone
-info
-here.
---------
-Pos:    
-(%s ,%s )
---------''' % (Player.classChosen,str(Player.level),str(Player.xpos),str(Player.ypos))
         while inMenu is False:
             for event in pygame.event.get():
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                     pygame.quit()
                     sys.exit()
 
-                if event.type == KEYDOWN: #Need to change these to while loops so the player keeps moving when a button is held. Will do later. 
-                    if event.key == K_w:
-                        if Player.ypos < 1:
-                            Player.ypos = 21
-                        else:
-                            Player.ypos -= 1
+                elif event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.key == K_w:
+                        moveUp = True
+                        moveDown = False
                     elif event.key == K_s:
-                        if Player.ypos > 20:
-                            Player.ypos = 0
-                        else:
-                            Player.ypos += 1
+                        moveUp = False
+                        moveDown = True
                     elif event.key == K_a:
-                        if Player.xpos < 1:
-                            Player.xpos = 29
-                        else:
-                            Player.xpos -= 1
+                        moveLeft = True
+                        moveRight = False
                     elif event.key == K_d:
-                        if Player.xpos > 28:
-                            Player.xpos = 0
-                        else:
-                            Player.xpos += 1
-                    elif event.key == K_F1:
-                        GameStateManager.displayMenu(1) #Pause
-                    elif event.key == K_F2: 
-                        GameStateManager.displayMenu(0) #Character Sheet (Not in yet)
-                    elif event.key == K_F3:
-                        GameStateManager.displayMenu(0) #Quest log.
+                        moveLeft = False
+                        moveRight = True
+                    lastmovetime = time.time() - 1
+
+                elif event.type == KEYUP:
+                    if event.key == K_w:
+                        moveUp = False
+                    elif event.key == K_s:
+                        moveDown = False
+                    elif event.key == K_a:
+                        moveLeft = False
+                    elif event.key == K_d:
+                        moveRight = False
+
+            moveSpeed = 0.05 #In hundreds (milliseconds)
+
+            if time.time() - 0.05 > lastmovetime:
+                if moveUp is True:
+                    time.sleep(moveSpeed)
+                    if Player.ypos < 1:
+                        Player.ypos = 21
+                    else:
+                        Player.ypos -= 1
+                elif moveDown is True:
+                    time.sleep(moveSpeed)
+                    if Player.ypos > 20:
+                        Player.ypos = 0
+                    else:
+                        Player.ypos += 1
+                elif moveLeft is True:
+                    time.sleep(moveSpeed)
+                    if Player.xpos < 1:
+                        Player.xpos = 29
+                    else:
+                        Player.xpos -= 1
+                elif moveRight is True:
+                    time.sleep(moveSpeed)
+                    if Player.xpos > 28:
+                        Player.xpos = 0
+                    else:
+                        Player.xpos += 1
+
+                
+               
                         
             win.setscreencolors('white', 'black', clear=True)
             box.update()
@@ -377,38 +387,38 @@ Pos:
             win.putchar('@',Player.xpos,Player.ypos,(255,255,255))
 
             #All these are commented out just to show what the textbox statusBox is doing. 
-            #win.cursor = (31,1)
-            #win.pygprint(' Class:')
-            #win.cursor = (31,2)
-            #win.pygprint(Player.classChosen)
-            #win.cursor = (31,4)
-            #win.pygprint('Lvl: %s' % (Player.level))
-            #win.cursor = (31,6)
-            #win.pygprint('Pos: ')
-            #win.cursor = (31,7)
-            #win.pygprint('(')
-            #win.cursor = (32,7)
-            #win.pygprint('%s' % (Player.xpos))
-            #win.cursor = (34,7)
-            #win.pygprint(',')
-            #win.cursor = (35,7)
-            #win.pygprint('%s' % (Player.ypos))
-            #win.cursor = (37,7)
-            #win.pygprint(')')
-            #win.cursor = (31,9)
-            #win.pygprint('--------')
-            #win.cursor = (31,11)
-            #win.pygprint('F1=Pause')
-            #win.cursor = (31,12)
-            #win.pygprint('F2=Char')
-            #win.cursor = (31,13)
-            #win.pygprint('F3=Quest')
-            #win.cursor = (31,15)
-            #win.pygprint('--------')
-            #win.cursor = (31,17)
-            #win.pygprint('Zone:')
-            #win.cursor = (31,18)
-            #win.pygprint('$zone')
+            win.cursor = (31,1)
+            win.pygprint(' Class:')
+            win.cursor = (31,2)
+            win.pygprint(Player.classChosen)
+            win.cursor = (31,4)
+            win.pygprint('Lvl: %s' % (Player.level))
+            win.cursor = (31,6)
+            win.pygprint('Pos: ')
+            win.cursor = (31,7)
+            win.pygprint('(')
+            win.cursor = (32,7)
+            win.pygprint('%s' % (Player.xpos))
+            win.cursor = (34,7)
+            win.pygprint(',')
+            win.cursor = (35,7)
+            win.pygprint('%s' % (Player.ypos))
+            win.cursor = (37,7)
+            win.pygprint(')')
+            win.cursor = (31,9)
+            win.pygprint('--------')
+            win.cursor = (31,11)
+            win.pygprint('F1=Pause')
+            win.cursor = (31,12)
+            win.pygprint('F2=Char')
+            win.cursor = (31,13)
+            win.pygprint('F3=Quest')
+            win.cursor = (31,15)
+            win.pygprint('--------')
+            win.cursor = (31,17)
+            win.pygprint('Zone:')
+            win.cursor = (31,18)
+            win.pygprint('$zone')
 
             win.blittowindow()
             win.update()
