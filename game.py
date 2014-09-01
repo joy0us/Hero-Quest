@@ -350,9 +350,12 @@ class Movement:
                     sys.exit()
 
                 elif event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
-                        pygame.quit()
-                        sys.exit()
+                    if event.key == K_F1:
+                        GameStateManager.displayMenu(1)
+                    elif event.key == K_F2:
+                        GameStateManager.displayMenu(2)
+                    elif event.key == K_F3:
+                        GameStateManager.displayMenu(3)
                     elif event.key == K_w:
                         moveUp = True
                         moveDown = False
@@ -393,29 +396,29 @@ class Movement:
                         elif Player.mapID == 3:
                             Player.ypos = 21
                             Player.mapID = 0
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 4:
                             Player.ypos = 21
                             Player.mapID = 1
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 5:
                             Player.ypos = 21
                             Player.mapID = 2
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
 
                         #rows 6,7, and 8. same as above.
                         elif Player.mapID == 6:
                             Player.ypos = 21
                             Player.mapID = 3
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 7:
                             Player.ypos = 21
                             Player.mapID = 4
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 8:
                             Player.ypos = 21
                             Player.mapID = 5
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                     else:
                         Player.ypos -= 1
 
@@ -425,27 +428,27 @@ class Movement:
                         if Player.mapID == 0:
                             Player.ypos = 0
                             Player.mapID = 3
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 1:
                             Player.ypos = 0
                             Player.mapID = 4
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 2:
                             Player.ypos = 0
                             Player.mapID = 5
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 3:
                             Player.ypos = 0
                             Player.mapID = 6
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 4:
                             Player.ypos = 0
                             Player.mapID = 7
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 5:
                             Player.ypos = 0
                             Player.mapID = 8
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif mapID == 6:
                             Player.ypos = 20
                         elif Player.mapID == 7:
@@ -463,31 +466,31 @@ class Movement:
                         elif Player.mapID == 1:
                             Player.xpos = 29
                             Player.mapID = 0
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 2:
                             Player.xpos = 29
                             Player.mapID = 1
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 3:
                             Player.xpos = 0
                         elif Player.mapID == 4:
                             Player.xpos = 29
                             Player.mapID = 3
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 5:
                             Player.xpos = 29
                             Player.mapID = 4
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 6:
                             Player.xpos = 0
                         elif Player.mapID == 7:
                             Player.xpos = 29
                             Player.mapID = 6
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 8:
                             Player.xpos = 29
                             Player.mapID = 7
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                     else:
                         Player.xpos -= 1
 
@@ -497,31 +500,31 @@ class Movement:
                         if Player.mapID == 0:
                             Player.xpos = 0
                             Player.mapID = 1
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 1:
                             Player.xpos = 0
                             Player.mapID = 2
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 2:
                             Player.xpos = 29
                         elif Player.mapID == 3:
                             Player.xpos = 0
                             Player.mapID = 4
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 4:
                             Player.xpos = 0
                             Player.mapID = 5
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 5:
                             Player.xpos = 29
                         elif Player.mapID == 6:
                             Player.xpos = 0
                             Player.mapID = 7
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 7:
                             Player.xpos = 0
                             Player.mapID = 8
-                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                            #Movement.printZone(Movement.coastalZone,Player.mapID)
                         elif Player.mapID == 8:
                             Player.xpos = 29
                     else:
