@@ -34,8 +34,18 @@ class GameStateManager: #For organization, keeps menus
     #6 new charecter dialogue
     #7 class selections screen
     #8 new char confirm screen
+    #9 battle dialogue
 
     @staticmethod
+    def flashScreen(x):
+        while x == 1:
+            win.fill('#', fgcolor='red',bgcolor='black')
+            time.sleep(0.05)
+            win.fill('#',fgcolor='blue',bgcolor='white')
+            time.sleep(0.05)
+            x += 1
+
+    @staticmethod        
     def displayMenu(x):
         checkMenu(1)
         if x == 0: #Main window when you first run the Game
@@ -191,7 +201,7 @@ class GameStateManager: #For organization, keeps menus
             win.write(qDialogue)
             box = pygcurse.PygcurseTextbox(win, (0,22,40,3), fgcolor='white', bgcolor='blue', border='basic',wrap=True,margin=0,caption='')
             box.text = 'F1 = Yes! | F2 = No!'
-            while classChosen == 0:
+            while True:
                 for event in pygame.event.get():
                     if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                         pygame.quit()
@@ -207,15 +217,42 @@ class GameStateManager: #For organization, keeps menus
                 win.cursor = 0, win.height-3
                 win.pygprint('')
                 win.blittowindow()
+        if x == 9:
+            battleWindow = pygcurse.PygcurseTextbox(win, (0, 0, 30, 22), fgcolor='red', bgcolor='black', border='basic', wrap=True, margin=3, caption='Battle!')
+            battleWindow.text = 'A wild monster has appeared!\nMonster stats will go here at a later date. Still working on other things.'
+            statusWindow = pygcurse.PygcurseTextbox(win, (0,22,40,3), fgcolor='red', bgcolor='black', border='basic',wrap=True,margin=0,caption='Status')
+            commandWindow = pygcurse.PygcurseTextbox(win, (30,0,10,22), fgcolor='red', bgcolor='black', border='basic', wrap=True, margin=3, caption='Cmds')
+            while inMenu is True:
+                for event in pygame.event.get():
+                    if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
+                        
+                    if event.type == KEYDOWN:
+                        if event.key == K_F1:
+                            Movement.playerMove()
+                            
+                win.setscreencolors('white', 'blue', clear=True)
+                win.setscreencolors
+                battleWindow.update()
+                statusWindow.text = 'HP:'+str(Player.health)+'/'+str(Player.max_health)+' | MP:'+str(Player.mana)+'/'+str(Player.max_mana)+' | Exp:' + str(Player.exp) + '/'+ str(Player.max_exp) +'*'
+                commandWindow.update()
+                statusWindow.update()
+                win.cursor = 0, win.height-3
+                win.pygprint('')
+                win.blittowindow()
+            
 
         
 
 class Player:
     mapID = 4
     #the default map ID is ALWAYS 4 because that's the center of the map array. 
-    zoneID = 4
     xpos = 0
     ypos = 0
+
+    inBattle = 0
+    isMoving = 0
     
     name = ''
     #Name list. Just a string with .split() at the end.
@@ -278,6 +315,8 @@ class Player:
     global skills
     skills = []
 
+    stepCounter = 0
+
     #None of these are in use right now. 
     def takeDmg(self, dmgTaken):
         if dmgTaken > health:
@@ -311,7 +350,12 @@ class Movement:
     map1zone7 = ['^^^^^^^^^................~~~~~','^7^^^^^................~~~~~~~','^^^^^^...............~~~~~~~~~','^^^..................~~~~~~~~~','^^^^^...###.........~~~~~~~~~~','^^^^....###........~~~~~~~~~~~','^^.......X..........~~~~~~~~~~','^.................~~~~~~~~~~~~','..................~~~~~~~~~~~~','.................~~~~~~~~~~~~~','................~~~~~~~~~~~~~~','..............~~~~~~~~~~~~~~~~','............~~~~~~~~~~~~~~~~~~','..........~~~~~~~~~~~~~~~~~~~~','........~~~~~~~~~~~~~~~~~~~~~~','......~~~~~~~~~~~~~~~~~~~~~~~~','...~~~~~~~~~~~~~~~~~~~~~~~~~~~','.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~']
     map1zone8 = ['^^^^^^^^^................~~~~~','^8^^^^^................~~~~~~~','^^^^^^...............~~~~~~~~~','^^^..................~~~~~~~~~','^^^^^...###.........~~~~~~~~~~','^^^^....###........~~~~~~~~~~~','^^.......X..........~~~~~~~~~~','^.................~~~~~~~~~~~~','..................~~~~~~~~~~~~','.................~~~~~~~~~~~~~','................~~~~~~~~~~~~~~','..............~~~~~~~~~~~~~~~~','............~~~~~~~~~~~~~~~~~~','..........~~~~~~~~~~~~~~~~~~~~','........~~~~~~~~~~~~~~~~~~~~~~','......~~~~~~~~~~~~~~~~~~~~~~~~','...~~~~~~~~~~~~~~~~~~~~~~~~~~~','.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~']
     coastalZone = [map1zone0,map1zone1,map1zone2,map1zone3,map1zone4,map1zone5,map1zone6,map1zone7,map1zone8]
-    
+
+    def isMoving():
+        while Player.isMoving == 1:
+            Player.stepCounter +=1
+            break
+            
     
     def colorMap(x,y):
         for i in range(0,len(x[y])):
@@ -333,10 +377,24 @@ class Movement:
     def isOnMap(x,y):
         return x >= 0 and y >= 0 and x < 29 and y < 21
 
+    battleChance = 0
+    def genBattle():
+        while Player.isMoving == 1:
+            battleChance = random.randint(0,99)
+            print(battleChance)
+            if battleChance < 8:
+                Player.inBattle = 1
+                print("Player is now in battle. Battle code: %s" % (Player.inBattle))
+                print("Battle display NOW")
+                GameStateManager.displayMenu(9)
+            Player.stepCounter = 0
+            break
+
                 
     def playerMove():
         
         moveLeft = moveRight = moveUp = moveDown = False
+        
         lastmovetime = sys.maxsize
 
         mainClock = pygame.time.Clock()
@@ -349,7 +407,7 @@ class Movement:
                     pygame.quit()
                     sys.exit()
 
-                elif event.type == KEYDOWN:
+                elif event.type == KEYDOWN:                    
                     if event.key == K_F1:
                         GameStateManager.displayMenu(1)
                     elif event.key == K_F2:
@@ -359,30 +417,40 @@ class Movement:
                     elif event.key == K_w:
                         moveUp = True
                         moveDown = False
+                        Player.isMoving = 1
                     elif event.key == K_s:
                         moveUp = False
                         moveDown = True
+                        Player.isMoving = 1
                     elif event.key == K_a:
                         moveLeft = True
                         moveRight = False
+                        Player.isMoving = 1
                     elif event.key == K_d:
                         moveLeft = False
                         moveRight = True
+                        Player.isMoving = 1
                     lastmovetime = time.time() - 1
 
                 elif event.type == KEYUP:
                     if event.key == K_w:
                         moveUp = False
+                        Player.isMoving = 0
                     elif event.key == K_s:
                         moveDown = False
+                        Player.isMoving = 0
                     elif event.key == K_a:
                         moveLeft = False
+                        Player.isMoving = 0
                     elif event.key == K_d:
                         moveRight = False
+                        Player.isMoving = 0
+                    Player.isMoving = 0
 
-            moveSpeed = 0.01 #In hundreds (milliseconds)
+            moveSpeed = 0.09 #In hundreds (milliseconds)
             if time.time() - 0.05 > lastmovetime:
                 if moveUp is True:
+                    
                     if Player.ypos < 1:
                         #if map id = 0,1, or 2 the player can't move up and no zones are redrawn.
                         if Player.mapID == 0:
@@ -421,9 +489,11 @@ class Movement:
                             #Movement.printZone(Movement.coastalZone,Player.mapID)
                     else:
                         Player.ypos -= 1
+                        Player.stepCounter += 1
+                    
 
                 elif moveDown is True:
-                    time.sleep(moveSpeed)
+                    
                     if Player.ypos > 20:
                         if Player.mapID == 0:
                             Player.ypos = 0
@@ -449,7 +519,7 @@ class Movement:
                             Player.ypos = 0
                             Player.mapID = 8
                             #Movement.printZone(Movement.coastalZone,Player.mapID)
-                        elif mapID == 6:
+                        elif Player.mapID == 6:
                             Player.ypos = 20
                         elif Player.mapID == 7:
                             Player.ypos = 20
@@ -457,9 +527,11 @@ class Movement:
                             Player.ypos = 20
                     else:
                         Player.ypos += 1
+                        Player.stepCounter += 1
+                    
                             
                 elif moveLeft is True:
-                    time.sleep(moveSpeed)
+                    
                     if Player.xpos < 1:
                         if Player.mapID == 0:
                             Player.xpos = 0
@@ -493,9 +565,11 @@ class Movement:
                             #Movement.printZone(Movement.coastalZone,Player.mapID)
                     else:
                         Player.xpos -= 1
+                        Player.stepCounter += 1
+                    
 
                 elif moveRight is True:
-                    time.sleep(moveSpeed)
+                    
                     if Player.xpos > 29:
                         if Player.mapID == 0:
                             Player.xpos = 0
@@ -529,8 +603,7 @@ class Movement:
                             Player.xpos = 29
                     else:
                         Player.xpos += 1
-
-                
+                        Player.stepCounter += 1
                
                         
             win.setscreencolors('white', 'black', clear=True)
@@ -552,11 +625,16 @@ here.
 --------
 Pos:    
 (%s,%s)
---------''' % (Player.classChosen,str(Player.level),str(Player.xpos),str(Player.ypos))
+--------
+Steps:
+%s
+--------''' % (Player.classChosen,str(Player.level),str(Player.xpos),str(Player.ypos),str(Player.stepCounter))
             box.text = 'HP:'+str(Player.health)+'/'+str(Player.max_health)+' | MP:'+str(Player.mana)+'/'+str(Player.max_mana)+' | Exp:' + str(Player.exp) + '/'+ str(Player.max_exp) +'*'
 
             win.blittowindow()
             win.update()
+            Movement.isMoving()
+            Movement.genBattle()
 
 Player = Player()
 Display = Display(pygcurse.PygcurseWindow(40, 25))
