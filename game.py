@@ -311,16 +311,28 @@ class Movement:
     map1zone7 = ['^^^^^^^^^................~~~~~','^7^^^^^................~~~~~~~','^^^^^^...............~~~~~~~~~','^^^..................~~~~~~~~~','^^^^^...###.........~~~~~~~~~~','^^^^....###........~~~~~~~~~~~','^^.......X..........~~~~~~~~~~','^.................~~~~~~~~~~~~','..................~~~~~~~~~~~~','.................~~~~~~~~~~~~~','................~~~~~~~~~~~~~~','..............~~~~~~~~~~~~~~~~','............~~~~~~~~~~~~~~~~~~','..........~~~~~~~~~~~~~~~~~~~~','........~~~~~~~~~~~~~~~~~~~~~~','......~~~~~~~~~~~~~~~~~~~~~~~~','...~~~~~~~~~~~~~~~~~~~~~~~~~~~','.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~']
     map1zone8 = ['^^^^^^^^^................~~~~~','^8^^^^^................~~~~~~~','^^^^^^...............~~~~~~~~~','^^^..................~~~~~~~~~','^^^^^...###.........~~~~~~~~~~','^^^^....###........~~~~~~~~~~~','^^.......X..........~~~~~~~~~~','^.................~~~~~~~~~~~~','..................~~~~~~~~~~~~','.................~~~~~~~~~~~~~','................~~~~~~~~~~~~~~','..............~~~~~~~~~~~~~~~~','............~~~~~~~~~~~~~~~~~~','..........~~~~~~~~~~~~~~~~~~~~','........~~~~~~~~~~~~~~~~~~~~~~','......~~~~~~~~~~~~~~~~~~~~~~~~','...~~~~~~~~~~~~~~~~~~~~~~~~~~~','.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~','~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~']
     coastalZone = [map1zone0,map1zone1,map1zone2,map1zone3,map1zone4,map1zone5,map1zone6,map1zone7,map1zone8]
-
+    
+    
+    def colorMap(x,y):
+        for i in range(0,len(x[y])):
+            win.cursor = (0,i)
+            if any("^" in s for s in x[y][i]) and any("." in s for s in x[y][i]) and any("~" in s for s in x[y][i]):
+                for i in range(0,len(x[y][i].count('^'))):
+                    win.write("^", fgcolor='olive')
+                for i in range(0,len(x[y][i].count('.'))):
+                    win.write(".", fgcolor = 'lime')
+                for i in range(0,len(x[y][i].count('~'))):
+                    win.write("~", fgcolor = 'blue')
 
     def printZone(x,y):
         for i in range(0,len(x[y])):
             win.cursor = (0,i)
-            win.pygprint(x[y][i])
+            win.write(x[y][i])
+
     
     def isOnMap(x,y):
         return x >= 0 and y >= 0 and x < 29 and y < 21
-        
+
                 
     def playerMove():
         
@@ -365,31 +377,153 @@ class Movement:
                     elif event.key == K_d:
                         moveRight = False
 
-            moveSpeed = 0.05 #In hundreds (milliseconds)
-
+            moveSpeed = 0.01 #In hundreds (milliseconds)
             if time.time() - 0.05 > lastmovetime:
                 if moveUp is True:
-                    time.sleep(moveSpeed)
                     if Player.ypos < 1:
-                        Player.ypos = 21
+                        #if map id = 0,1, or 2 the player can't move up and no zones are redrawn.
+                        if Player.mapID == 0:
+                            Player.ypos = 0
+                        elif Player.mapID == 1:
+                            Player.ypos = 0
+                        elif Player.mapID == 2:
+                            Player.ypos = 0
+
+                        #if map id = 3,4,or5 allow movement up and redraw the zone accordingly.
+                        elif Player.mapID == 3:
+                            Player.ypos = 21
+                            Player.mapID = 0
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 4:
+                            Player.ypos = 21
+                            Player.mapID = 1
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 5:
+                            Player.ypos = 21
+                            Player.mapID = 2
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+
+                        #rows 6,7, and 8. same as above.
+                        elif Player.mapID == 6:
+                            Player.ypos = 21
+                            Player.mapID = 3
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 7:
+                            Player.ypos = 21
+                            Player.mapID = 4
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 8:
+                            Player.ypos = 21
+                            Player.mapID = 5
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
                     else:
                         Player.ypos -= 1
+
                 elif moveDown is True:
                     time.sleep(moveSpeed)
                     if Player.ypos > 20:
-                        Player.ypos = 0
+                        if Player.mapID == 0:
+                            Player.ypos = 0
+                            Player.mapID = 3
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 1:
+                            Player.ypos = 0
+                            Player.mapID = 4
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 2:
+                            Player.ypos = 0
+                            Player.mapID = 5
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 3:
+                            Player.ypos = 0
+                            Player.mapID = 6
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 4:
+                            Player.ypos = 0
+                            Player.mapID = 7
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 5:
+                            Player.ypos = 0
+                            Player.mapID = 8
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif mapID == 6:
+                            Player.ypos = 20
+                        elif Player.mapID == 7:
+                            Player.ypos = 20
+                        elif Player.mapID == 8:
+                            Player.ypos = 20
                     else:
                         Player.ypos += 1
+                            
                 elif moveLeft is True:
                     time.sleep(moveSpeed)
                     if Player.xpos < 1:
-                        Player.xpos = 29
+                        if Player.mapID == 0:
+                            Player.xpos = 0
+                        elif Player.mapID == 1:
+                            Player.xpos = 29
+                            Player.mapID = 0
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 2:
+                            Player.xpos = 29
+                            Player.mapID = 1
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 3:
+                            Player.xpos = 0
+                        elif Player.mapID == 4:
+                            Player.xpos = 29
+                            Player.mapID = 3
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 5:
+                            Player.xpos = 29
+                            Player.mapID = 4
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 6:
+                            Player.xpos = 0
+                        elif Player.mapID == 7:
+                            Player.xpos = 29
+                            Player.mapID = 6
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 8:
+                            Player.xpos = 29
+                            Player.mapID = 7
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
                     else:
                         Player.xpos -= 1
+
                 elif moveRight is True:
                     time.sleep(moveSpeed)
-                    if Player.xpos > 28:
-                        Player.xpos = 0
+                    if Player.xpos > 29:
+                        if Player.mapID == 0:
+                            Player.xpos = 0
+                            Player.mapID = 1
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 1:
+                            Player.xpos = 0
+                            Player.mapID = 2
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 2:
+                            Player.xpos = 29
+                        elif Player.mapID == 3:
+                            Player.xpos = 0
+                            Player.mapID = 4
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 4:
+                            Player.xpos = 0
+                            Player.mapID = 5
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 5:
+                            Player.xpos = 29
+                        elif Player.mapID == 6:
+                            Player.xpos = 0
+                            Player.mapID = 7
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 7:
+                            Player.xpos = 0
+                            Player.mapID = 8
+                            Movement.printZone(Movement.coastalZone,Player.mapID)
+                        elif Player.mapID == 8:
+                            Player.xpos = 29
                     else:
                         Player.xpos += 1
 
